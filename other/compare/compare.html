@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Map</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/css/esri.css">
+	<!--<link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.23/3.23/dijit/themes/claro/claro.css">
+ 	<link rel="stylesheet" href="http://localhost/arcgis_js_api/library/3.23/3.23/esri/css/esri.css">-->
+    <style>
+      html, body, 
+      #map {
+        height: 100%;
+        width:100%;
+        margin: 0;
+        padding: 0;
+      }
+      #Baidumap
+        {
+        	height: 365px;
+          width: 770px;
+        }
+      #Gaodemap
+        {
+          position: absolute;
+          height: 365px;
+          width: 770px;
+          left: 770px;
+          top: 0px;
+        }
+      #OSMmap
+        {
+          position: absolute;
+          height: 365px;
+          width: 770px;
+          left: 0px;
+          top: 370px;
+        }
+       #Tiandimap
+        {
+          position: absolute;
+          height: 365px;
+          width: 770px;
+          left: 770px;
+          top: 370px;
+        }
+
+    </style>
+    <script type="text/javascript">
+        dojoConfig = {
+            parseOnLoad: true,
+            packages: [{
+                name: 'src',
+                location: this.location.pathname.replace(/\/[^/]+$/, "")+"/src"
+            }]
+        };
+    </script>
+    <script src="https://js.arcgis.com/3.23/"></script>
+<!--		<script src="http://localhost/arcgis_js_api/library/3.23/3.23/init.js"></script>-->
+
+    <script>
+      var Baidumap,Gaodemap,OSMmap,Tiandimap,Satellitemap;
+      var a=0,b=0,c=0,d=0;
+	    require([
+	        "esri/map",
+	        "src/BaiduLayer",
+	        "src/GaodeLayer",
+	        "src/TiandiLayer",
+	        "src/TiandiAnnoLayer",
+	        "esri/geometry/Extent", 
+  			  "esri/SpatialReference", 
+	        "dojo/parser",
+	        "dojo/domReady!"], 
+	    function(Map,BaiduLayer, GaodeLayer,TiandiLayer,TiandiAnnoLayer,Extent,SpatialReference, parser) {
+	        parser.parse();
+	        var dataExtent = new Extent(116.5, 28.5, 119.5, 33.5, new SpatialReference(4326));
+	        //加载百度地图图层
+//	        Baidumap = new Map("Baidumap", {
+//	            logo: false,
+//	            extent: dataExtent,
+////			        center: [114.2, 30.6],
+////			        zoom: 8
+//	        });
+//	        var Baidulayer = new BaiduLayer();
+//	        Baidumap.addLayer(Baidulayer);
+				Satellitemap = new Map("Baidumap", {
+		          basemap: "satellite",
+		          extent: dataExtent,
+		//        center: [114.2, 30.6], // longitude, latitude
+		//        zoom: 8
+        	});
+	        
+	        //加载高德地图图层
+	        Gaodemap = new Map("Gaodemap", {
+			        logo: false,
+			        extent: dataExtent,
+//			        center: [114.2, 30.6],
+//			        zoom: 8
+			    });
+			    var gaodelayer = new GaodeLayer();
+			    Gaodemap.addLayer(gaodelayer);
+
+//    
+//			    var map = new Map("map", {
+//			      basemap: "dark-gray",
+//			      extent: dataExtent
+//			    });
+
+			    //加载OSM地图图层
+			    
+			    OSMmap = new Map("OSMmap", {
+          basemap: "osm",
+          extent: dataExtent,
+//        center: [114.2, 30.6], // longitude, latitude
+//        zoom: 8
+        	});
+        	
+          //加载天地图
+          Tiandimap = new Map("Tiandimap", {
+	          logo: false,
+	          extent: dataExtent,
+//	          center: [114.2, 30.6],
+//	          zoom: 8
+	        });
+	        // 加载天地矢量图和标注图层
+	        var tiandilayer = new TiandiLayer();
+	        var tiandilabellayer = new TiandiAnnoLayer();
+	        Tiandimap.addLayer(tiandilayer);
+	        Tiandimap.addLayer(tiandilabellayer);
+	        
+	      //联动
+	      Satellitemap.on("mouse-over",function(event){
+        	a=1;
+        });
+        Satellitemap.on("mouse-out",function(event){
+        	a=0;
+        });
+        Gaodemap.on("mouse-over",function(event){
+        	b=1;
+        });
+        Gaodemap.on("mouse-out",function(event){
+        	b=0;
+        });
+        OSMmap.on("mouse-over",function(event){
+        	c=1;
+        });
+        OSMmap.on("mouse-out",function(event){
+        	c=0;
+        });
+        Tiandimap.on("mouse-over",function(event){
+        	d=1;
+        });
+        Tiandimap.on("mouse-out",function(event){
+        	d=0;
+        });
+        
+        Satellitemap.on("extent-change",function(event){
+        	if(a==1)
+        	{
+        		  if(Gaodemap)
+              {
+                Gaodemap.setExtent(event.extent);
+              }
+              if(OSMmap)
+              {
+                OSMmap.setExtent(event.extent);
+              }
+              if(Tiandimap)
+              {
+                Tiandimap.setExtent(event.extent);
+              }
+        	}
+        
+        }); 
+       
+        Gaodemap.on("extent-change",function(event){
+        	if(b==1)
+        	{
+        		if(Satellitemap)
+              {
+                  Satellitemap.setExtent(event.extent);
+              }
+            if(OSMmap)
+              {
+                OSMmap.setExtent(event.extent);
+              }
+            if(Tiandimap)
+              {
+                Tiandimap.setExtent(event.extent);
+              }
+        	}
+        });
+        
+        OSMmap.on("extent-change",function(event){
+        	if(c==1)
+        	{
+        		if(Satellitemap)
+              {
+                Satellitemap.setExtent(event.extent);
+              }
+            if(Gaodemap)
+              {
+                Gaodemap.setExtent(event.extent);
+              }
+            if(Tiandimap)
+              {
+                Tiandimap.setExtent(event.extent);
+              }
+        	}
+        	
+        });
+        
+        Tiandimap.on("extent-change",function(event){
+        	if(d==1)
+        	{
+        		if(Satellitemap)
+              {
+                Satellitemap.setExtent(event.extent);
+              }
+            if(Gaodemap)
+              {
+                Gaodemap.setExtent(event.extent);
+              }
+            if(OSMmap)
+              {
+                OSMmap.setExtent(event.extent);
+              }
+        	}
+        	
+        });
+        
+        
+	        
+     });
+
+    </script>
+  </head>
+
+  <body>
+  	<div id="map">
+  		<div id="Baidumap"></div>
+    	<div id="Gaodemap"></div>
+    	<div id="OSMmap"></div>
+    	<div id="Tiandimap"></div>
+  	</div>
+    
+  </body>
+</html>
+ 
