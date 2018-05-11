@@ -12,12 +12,14 @@
 	<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=vaA2en4hVGSqKjtIRPG0lVmLV919uDAD"></script>
 	<title>抓取数据列表</title> 
        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://qqq807111690.github.io/web4gis15/bootstrap-table.min.css">  
+        <link rel="stylesheet" href="https://qqq807111690.github.io/web4gis15/bootstrap-table.min.css"> 
+        <link rel="stylesheet" href="https://js.arcgis.com/3.24/esri/css/esri.css">		
         <!-- <link rel="stylesheet" href="bootstrap_table/css/bootstrap-editable.css">   -->
         <script src="https://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
         <!-- <script src="bootstrap_table/js/vue.min.js"></script>   -->
         <script src="https://qqq807111690.github.io/web4gis15//bootstrap-table.min.js"></script>  
+		  <script src="https://js.arcgis.com/3.24/"></script>
         <!-- <script src="bootstrap_table/js/bootstrap-editable.js"></script>   -->
         <!-- <script src="bootstrap_table/js/bootstrap-table-editable.js"></script>   -->
         <!-- <meta charset="UTF-8">   -->
@@ -43,7 +45,8 @@
                 <table id="test-table"></table>  
             </div>  
         </div> 
-	
+	 <font size="5" color="black">OSM地图数据：</font>
+	 <div id="map"></div>
     </body>  
     <script>  
 	var map = new BMap.Map('allmap');
@@ -54,7 +57,6 @@
 	map.addControl(new BMap.OverviewMapControl());       //添加缩略地图控件
 	map.enableScrollWheelZoom();                         //启用滚轮放大缩小
 	map.disable3DBuilding();
-
 	//个性化在线编辑器地址：http://lbsyun.baidu.com/custom/
 	  var styleJson = [
           {
@@ -152,15 +154,38 @@
                     }
           },
           {
-                    "featureType": "subway",
+                    "featureType": "water",
                     "elementType": "all",
                     "stylers": {
-                              "color": "#000000ff",
                               "visibility": "off"
                     }
           },
           {
-                    "featureType": "water",
+                    "featureType": "green",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#e69138ff",
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "manmade",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#00ff00ff",
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": {
+                              "color": "#3d85c6ff",
+                              "visibility": "off"
+                    }
+          },
+          {
+                    "featureType": "poilabel",
                     "elementType": "all",
                     "stylers": {
                               "visibility": "off"
@@ -174,20 +199,6 @@
                     }
           },
           {
-                    "featureType": "green",
-                    "elementType": "all",
-                    "stylers": {
-                              "visibility": "off"
-                    }
-          },
-          {
-                    "featureType": "manmade",
-                    "elementType": "all",
-                    "stylers": {
-                              "color": "#e69138ff"
-                    }
-          },
-          {
                     "featureType": "building",
                     "elementType": "all",
                     "stylers": {
@@ -195,7 +206,7 @@
                     }
           },
           {
-                    "featureType": "poilabel",
+                    "featureType": "subway",
                     "elementType": "all",
                     "stylers": {
                               "visibility": "off"
@@ -298,7 +309,15 @@
                     $("#test-table").bootstrapTable("load", data);  
                 <!-- }   -->
               })
-   
+     var osmmap;
+       
+      require(["esri/map", "dojo/domReady!"], function(Map) {
+        osmmap = new Map("map", {
+          basemap: "osm",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+          center: [120.209761,30.249588], // longitude, latitude
+          zoom: 16
+        });
+      });
     </script>  
   
 </html>  
